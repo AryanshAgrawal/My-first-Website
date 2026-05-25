@@ -1,27 +1,208 @@
-function one() {
-    window.alert("Christ the Redeemer is a statue in Rio de Janeiro, Brazil that was built as a symbol of Brazilian Christianity. In 1850, the idea of building a religious monument was first suggested by a Catholic Priest. It wasn't until 1920 when a group petitioned for support to build a landmark statue that it became a reality. The design was chosen from several ideas and construction began in the 1920s, taking nine years to finish. Today, Christ the Redeemer is one of the New Seven Wonders of the World.");
+const app = document.getElementById('app');
+
+const state = {
+  users: JSON.parse(localStorage.getItem('kts_users') || '{}'),
+  currentUser: JSON.parse(localStorage.getItem('kts_current') || 'null'),
+  orders: JSON.parse(localStorage.getItem('kts_orders') || '[]'),
+  pendingOrder: null,
+};
+
+const staff = {
+  owner: { email: 'owner@ktiffin.com', password: 'Owner@123', role: 'owner' },
+  manager: { email: 'manager@ktiffin.com', password: 'Manager@123', role: 'manager' },
+  operator: { email: 'operator@ktiffin.com', password: 'Operator@123', role: 'operator' },
+};
+
+const bulkFoodItems = [
+  { item: 'Veg Biryani', rate: 180 }, { item: 'Paneer Butter Masala', rate: 220 }, { item: 'Dal Tadka', rate: 130 },
+  { item: 'Jeera Rice', rate: 110 }, { item: 'Roti (per piece)', rate: 15 }, { item: 'Gulab Jamun', rate: 35 }
+];
+
+function save() {
+  localStorage.setItem('kts_users', JSON.stringify(state.users));
+  localStorage.setItem('kts_current', JSON.stringify(state.currentUser));
+  localStorage.setItem('kts_orders', JSON.stringify(state.orders));
 }
 
-function two() {
-    window.alert("Taj Mahal needs no introduction. This monument is on the list of the Seven Wonders of the World. No wonder people swarm in flies all year round to witness the magnificence of his beauty. This monument is located in India in the city of Agra in Uttar Pradesh. In other words, Taj Mahal marks the excellence of Mughal architecture.");
+function renderAboutLogin() {
+  app.innerHTML = `
+  <section class="card">
+    <h2>About Us</h2>
+    <p>The K Tiffin Story serves hygienic meals with consistency, affordability, and quality for homes, offices, and events.</p>
+    <div class="grid cols-4">
+      <div class="stat"><strong>2500+</strong><br><span class="small">Monthly Orders</span></div>
+      <div class="stat"><strong>98%</strong><br><span class="small">On-time Delivery</span></div>
+      <div class="stat"><strong>4.7/5</strong><br><span class="small">Customer Rating</span></div>
+      <div class="stat"><strong>120+</strong><br><span class="small">Corporate Clients</span></div>
+    </div>
+  </section>
+  <section class="card grid cols-2">
+    <div>
+      <h3>Login</h3>
+      <input id="loginEmail" placeholder="Email" />
+      <input id="loginPass" type="password" placeholder="Password" />
+      <button class="primary" onclick="login()">Login</button>
+      <p class="small">Staff Logins: owner@ktiffin.com, manager@ktiffin.com, operator@ktiffin.com</p>
+    </div>
+    <div>
+      <h3>Register</h3>
+      <input id="regName" placeholder="Full Name" />
+      <input id="regEmail" placeholder="Email" />
+      <input id="regPhone" placeholder="Phone" />
+      <input id="regPass" type="password" placeholder="Password" />
+      <button onclick="registerUser()">Register</button>
+    </div>
+  </section>`;
 }
 
-function three() {
-    window.alert("The Colosseum, also known as the Flavian Amphitheatre, is a large artefact or structure in the city of Rome. The construction of the Colosseum started around 70–72 AD and was finished in 80 AD. Emperor Vespasian started all the work, and Emperor Titus completed the coløsseum. Emperor Domitian made some changes to the building between 81–96 AD.[1] It had seating for 50,000 people.[2] It was 156 metres (512 ft) wide, 189 metres (620 ft) long and 57 metres (187 ft) tall. It is the biggest amphitheatre built by the Roman Empire.The Colosseum is in Rome, the capital of Italy. More precisely, it is on the east bank of the Tiber, the river that crosses the city, east of the ancient Roman forum. A forum in antiquity was a geographical area in which were the main buildings of power, as well as the large square on which the population met. It was both a busy place to live, a place to get married, big parties, community meetings, and so on. The stadium was less than a kilometer to the southwest, the Capitol was a little over a mile to the west.");
+function login() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const staffUser = Object.values(staff).find(s => s.email === email && s.password === pass);
+  if (staffUser) { state.currentUser = { email, name: staffUser.role.toUpperCase(), role: staffUser.role }; save(); return render(); }
+  const user = state.users[email];
+  if (!user || user.password !== pass) return alert('Invalid credentials');
+  state.currentUser = { ...user, email, role: 'customer' }; save(); render();
 }
 
-function four() {
-    window.alert("The Great Wall of China is an ancient wall in China. The wall is made of cement, rocks, bricks, and powdered dirt. It was finished in 1878[1] and it was meant to protect the north of the empire of China from enemy attacks. It is the longest structure humans have ever built. It is about 21,196 kilometres (13,171 miles) long, 9.1 metres (30 feet) wide and 15 metres (50 feet) high. The earlier sections on the wall are made of compacted dirt and stone. Later in the Ming Dynasty they used bricks. There are 7,000 watch towers, block houses for soldiers and beacons to send smoke signals.Nineteen walls have been built that were called the Great Wall of China. The first was built in the 7th century BC. The most famous wall was built between 226–200 BC by the first Emperor of China, Qin Shai Hong (Qin Pronounced as Chin) , during the Qin Dynasty. Not much of this wall remains as people have been stealing from it. It was much farther north than the current wall. The current wall was built during the Ming Dynasty.[2]");
+function registerUser() {
+  const name = regName.value.trim(), email = regEmail.value.trim().toLowerCase(), phone = regPhone.value.trim(), password = regPass.value;
+  if (!name || !email || !phone || !password) return alert('Please fill all fields.');
+  state.users[email] = { name, phone, password }; state.currentUser = { name, phone, email, role: 'customer' }; save(); render();
 }
 
-function five() {
-    window.alert("(Machu Picchu is a pre-Columbian 15th-century Inca site in Peru, in South America.The Incas built the city on a mountain ridge, 2430m above sea level. They lived there between 1200 and 1450 AD. Other people lived there before about 650 AD.The Incas built houses, fields and temples by cutting the rock on the mountain so it was flat. They built an Observatory to look at the stars).When the Spanish invaded Peru, the Incas left Machu Picchu. Nobody knows for sure why they did that, but some think it was because of diseases from Europe. The city was left unfinished, most likely due to the Spanish invasion and/or a civil war between the ruling rival Inca brothers named Huascar and Atahualpa. The Spanish never found Machu Picchu or the lost city during their occupation.(Machu Picchu is very difficult to get to because it is so high in the mountains. It has only one way in and a stone wall to protect it. Most people on Earth did not know it was there until a Yale graduate named Hiram Bingham rediscovered it in 1911). He heard rumours of a hidden city which was already known to the native Peruvians, who guided him there. He led a restoration project that was partly funded by the National Geographic Society. Bingham made a deal with the government to take artifacts to the Peabody Museum for study. Peru is still trying to have those artifacts returned to them.");
+function logout() { state.currentUser = null; save(); render(); }
+
+function renderServiceSelection() {
+  app.innerHTML = `<section class="card"><h2>Choose Type of Service</h2><div class="grid cols-2">
+    <button onclick="openService('Regular Meal Service')">Regular Meal Service</button>
+    <button onclick="openService('Corporate Meal Service')">Corporate Meal Service</button>
+    <button onclick="openService('Bulk Ordering Service')">Bulk Ordering Service</button>
+    <button onclick="openService('Catering Service')">Catering Service</button>
+  </div><br><button onclick="logout()">Logout</button></section>`;
 }
 
-function six() {
-    window.alert("The Statue of Liberty[a] (officially named Liberty Enlightening the World[1] and sometimes referred to as Lady Liberty) is a monument symbolising the United States. The statue is placed on Ellis Island, near New York City Harbor. Statue.pngThe statue commemorates the signing of the United States Declaration of Independence. It was given to the United States by the people of France in 1886, to represent the friendship between the two countries established during the American Revolution.[2] It represents a woman wearing a stola, a crown and sandals, trampling a broken chain, and with a torch in her raised right hand and a tabula ansata, or tablet where the date of the Declaration of Independence JULY IV MDCCLXXVI (1776) [3] is written, in her left hand. The statue is on Liberty Island in New York Harbor,[4] and it welcomes visitors, immigrants, and returning Americans travelling by ship.[5]Frédéric Auguste Bartholdi sculpted the statue[6] and he obtained a U.S. patent for the structure.[7] Maurice Koechlin, who was chief engineer of Gustave Eiffel's engineering company and designer of the Eiffel Tower, designed the internal structure. The pedestal was designed by the architect Richard Morris Hunt. Eugène Viollet-le-Duc chose copper in the construction of the statue, and for the adoption of the repoussé construction technique, where a malleable metal is hammered on the reverse side.[8]The statue is made of a covering of pure copper, left to weather to a natural blue-green patina. It has a framework of steel (originally puddled iron). The exception is the flame of the torch, which is coated in gold leaf (originally made of copper and later altered to hold glass panes). It is on a rectangular stonework pedestal. The foundation is an old star fort in the shape of an irregular eleven-pointed star. The statue is 151 ft (46 m) tall, but with the pedestal and foundation, it is 305 ft (93 m) tall.");
+function openService(service) {
+  state.pendingOrder = { service, user: state.currentUser, status: 'Pending' };
+  if (service === 'Regular Meal Service') return renderRegularSubscription();
+  if (service === 'Bulk Ordering Service') return renderBulkOrdering();
+  if (service === 'Corporate Meal Service') return renderCorporate();
+  return renderCatering();
 }
 
-function seven() {
-    window.alert("Petra (Arabic: ٱلْبَتْرَاء‎, romanized: Al-Batrāʾ; Ancient Greek: Πέτρα, originally known to its inhabitants in as Raqmu or Raqēmō (𐢚𐢛𐢓𐢈)[3][4], is a historic and archaeological city in southern Jordan. Petra lies around Jabal Al-Madbah in a basin surrounded by mountains which form the eastern flank of the Arabah valley that runs from the Dead Sea to the Gulf of Aqaba.[5] The area around Petra has been inhabited from as early as 7000 BC,[6] and the Nabataeans might have settled in what would become the capital city of their kingdom, as early as the 4th century BC.[7] However, archaeological work has only discovered evidence of Nabataean presence dating back to the second century BC,[8] by which time Petra had become their capital.[6] The Nabataeans were nomadic Arabs who invested in Petra's proximity to the trade routes by establishing it as a major regional trading hub.[6][9]The trading business gained the Nabataeans considerable revenue and Petra became the focus of their wealth. The Nabataeans were accustomed to living in the barren deserts, unlike their enemies, and were able to repel attacks by taking advantage of the area's mountainous terrain. They were particularly skillful in harvesting rainwater, agriculture and stone carving. Petra flourished in the 1st century AD, when its famous Al-Khazneh structure – believed to be the mausoleum of Nabataean king Aretas IV – was constructed, and its population peaked at an estimated 20,000 inhabitants.[10]Although the Nabataean kingdom became a client state of the Roman Empire in the first century BC, it was only in 106 AD that it lost its independence. Petra fell to the Romans, who annexed Nabataea and renamed it as Arabia Petraea.Petras importance declined as sea trade routes emerged, and after an earthquake in 363 destroyed many structures. In the Byzantine era several Christian churches were built, but the city continued to decline, and by the early Islamic era it was abandoned except for a handful of nomads. It remained unknown to the world until it was rediscovered in 1812 by Johann Ludwig Burckhardt.[11]");
+function renderRegularSubscription() {
+  app.innerHTML = `<section class="card"><h2>Regular Meal Service</h2>
+    <p>Choose subscription:</p>
+    <div class="grid cols-2">
+      <button onclick="selectSub(1500, '15 Days')">₹1500 - 15 Days</button>
+      <button onclick="selectSub(3000, '30 Days')">₹3000 - 30 Days</button>
+    </div>
+    <br><button onclick="renderServiceSelection()">Back</button></section>`;
 }
+function selectSub(price, plan) { state.pendingOrder.subscription = { price, plan }; renderMealTypes(); }
+
+function renderMealTypes() {
+  app.innerHTML = `<section class="card"><h2>Meal Types</h2>
+    <label>Meal Type</label>
+    <select id="mealType">
+      <option value="Eco Meal (5 items)">Eco Meal (5 items) - Low Price</option>
+      <option value="Regular Tiffin (8 items)">Regular Tiffin (8 items)</option>
+    </select>
+    <label>Customizable Menu (optional)</label>
+    <textarea id="customMenu" rows="4" placeholder="Ex: 2 chapati, dal, paneer, salad"></textarea>
+    <button class="primary" onclick="goPayment('regular')">Continue to Payment</button>
+  </section>`;
+}
+
+function renderCorporate() {
+  app.innerHTML = `<section class="card"><h2>Corporate Meal Service</h2>
+  <p>Specialized office meal planning with recurring delivery slots.</p>
+  <input id="corpCompany" placeholder="Company Name"/>
+  <input id="corpCount" type="number" placeholder="Approx Meal Count per day"/>
+  <input id="corpContact" placeholder="Contact Number"/>
+  <button class="primary" onclick="goPayment('corporate')">Submit & Proceed to Payment</button>
+  <br><br><button onclick="renderServiceSelection()">Back</button></section>`;
+}
+
+function renderCatering() {
+  app.innerHTML = `<section class="card"><h2>Catering Service</h2>
+  <p>For weddings, parties, and family events.</p>
+  <input id="catOccasion" placeholder="Occasion"/>
+  <input id="catGuests" type="number" placeholder="Number of Guests"/>
+  <input id="catDate" type="date"/>
+  <button class="primary" onclick="goPayment('catering')">Submit & Proceed to Payment</button>
+  <br><br><button onclick="renderServiceSelection()">Back</button></section>`;
+}
+
+function renderBulkOrdering() {
+  const options = bulkFoodItems.map(i => `<option value="${i.item} - ₹${i.rate}">${i.item} - ₹${i.rate}</option>`).join('');
+  app.innerHTML = `<section class="card"><h2>Bulk Ordering Service</h2>
+    <input id="bulkName" placeholder="Name of the consumer" value="${state.currentUser.name || ''}"/>
+    <input id="bulkPhone" placeholder="Phone number of the consumer" value="${state.currentUser.phone || ''}"/>
+    <input id="bulkAddress" placeholder="Address of consumer"/>
+    <label>Food Items and Rates</label>
+    <select id="bulkItems" multiple size="6">${options}</select>
+    <p class="small">Use Ctrl/Cmd + click to select multiple items.</p>
+    <button class="primary" onclick="goPayment('bulk')">Continue to Payment</button>
+    <br><br><button onclick="renderServiceSelection()">Back</button>
+  </section>`;
+}
+
+function goPayment(type) {
+  const p = state.pendingOrder;
+  if (type === 'regular') { p.mealType = mealType.value; p.customMenu = customMenu.value; p.amount = p.subscription.price; }
+  if (type === 'corporate') { p.details = { company: corpCompany.value, count: corpCount.value, contact: corpContact.value }; p.amount = 5000; }
+  if (type === 'catering') { p.details = { occasion: catOccasion.value, guests: catGuests.value, date: catDate.value }; p.amount = 8000; }
+  if (type === 'bulk') {
+    p.details = { name: bulkName.value, phone: bulkPhone.value, address: bulkAddress.value, items: [...bulkItems.selectedOptions].map(o => o.value) };
+    p.amount = 3500;
+  }
+  app.innerHTML = `<section class="card"><h2>Payment Gateway</h2>
+    <p>Payable Amount: <strong>₹${p.amount}</strong></p>
+    <input id="payCard" placeholder="Card Number"/>
+    <div class="grid cols-2"><input id="payExpiry" placeholder="MM/YY"/><input id="payCvv" placeholder="CVV"/></div>
+    <button class="success" onclick="completePayment()">Pay Now</button>
+  </section>`;
+}
+
+function completePayment() {
+  state.pendingOrder.id = 'ORD' + Date.now();
+  state.pendingOrder.createdAt = new Date().toISOString();
+  state.orders.unshift(state.pendingOrder); state.pendingOrder = null; save();
+  alert('Payment successful & order placed.');
+  renderServiceSelection();
+}
+
+function renderOwner() {
+  const byService = ['Regular Meal Service', 'Corporate Meal Service', 'Bulk Ordering Service', 'Catering Service']
+    .map(s => ({ s, count: state.orders.filter(o => o.service === s).length }));
+  app.innerHTML = `<section class="card"><h2>Owner Dashboard</h2><button onclick="logout()">Logout</button>
+    <div class="grid cols-4">${byService.map(x => `<div class='stat'><strong>${x.count}</strong><br>${x.s}</div>`).join('')}</div>
+    <h3>All Orders & Controls</h3>${renderOrders(true)}</section>`;
+}
+
+function renderManagerOperator(role) {
+  app.innerHTML = `<section class="card"><h2>${role.toUpperCase()} Dashboard</h2><button onclick="logout()">Logout</button>
+  <p>Received orders with customer details and operational controls.</p>
+  ${renderOrders(false)}
+  </section>`;
+}
+
+function renderOrders(ownerControls) {
+  return state.orders.map(o => `<div class="order"><div><span class="badge">${o.status}</span> ${o.id} | ${o.service}</div>
+  <div class="small">Customer: ${o.user?.name || 'NA'} | ${o.user?.email || 'NA'} | ${o.user?.phone || 'NA'}</div>
+  <div class="small">Amount: ₹${o.amount || 0}</div>
+  ${ownerControls ? `<div class='grid cols-2'><button onclick="setStatus('${o.id}','Accepted')">Accept</button><button class='danger' onclick="setStatus('${o.id}','Rejected')">Reject</button></div>` : `<button onclick="setStatus('${o.id}','Processing')">Mark Processing</button>`}
+  </div>`).join('') || '<p>No orders yet.</p>';
+}
+
+function setStatus(id, status) { const o = state.orders.find(x => x.id === id); if (o) o.status = status; save(); render(); }
+
+function render() {
+  if (!state.currentUser) return renderAboutLogin();
+  if (state.currentUser.role === 'owner') return renderOwner();
+  if (state.currentUser.role === 'manager' || state.currentUser.role === 'operator') return renderManagerOperator(state.currentUser.role);
+  return renderServiceSelection();
+}
+
+render();
